@@ -1,0 +1,20 @@
+package ca.freshstart.types;
+
+public enum Module {
+    AUTH,
+    SETTINGS,
+    SESSIONS,
+    AVAILABILITY,
+    EVENTS,
+    THERAPIST,
+    HEALTH,
+    HEALTH_UI,
+    HEALTH_CONDITIONS,
+    SUGGESTED_SERVICES,
+    SUGGESTED_SERVICES_UI,
+    MATCHING_BOARD,
+    BOOKING,
+    RECONCILE,
+    ESTIMATE,
+    REPORTS
+}

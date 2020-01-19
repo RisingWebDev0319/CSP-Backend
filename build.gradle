@@ -1,0 +1,143 @@
+import org.yaml.snakeyaml.DumperOptions
+import org.yaml.snakeyaml.Yaml
+import groovy.sql.Sql
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.5.3.RELEASE")
+        classpath 'org.yaml:snakeyaml:1.14'
+    }
+}
+
+plugins {
+    id "org.flywaydb.flyway" version "5.0.6"
+}
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'groovy'
+
+group 'ca.freshsstart'
+version '0.7.5'
+if(System.properties["version"] != null) {
+    version = System.properties["version"]
+}
+
+
+def configFile = 'application.yml'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+processResources {
+    // hack
+
+    from("src/main/resources/application.yml") {
+        filter { String line ->
+            line.replaceAll(/\$\{version\}/, project.version)
+        }
+    }
+}
+
+bootRun {
+    systemProperties = System.properties
+//    addResources = false
+}
+
+DumperOptions options = new DumperOptions();
+options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+def yaml = new Yaml(options)
+project.hasProperty("conf") && (configFile = conf)
+def file = new File(this.projectDir.absolutePath + "/src/main/resources/" + configFile).text
+def appConfig = (Map) yaml.load(file)
+if(System.properties["db.user"] != null) {
+    appConfig.db.user = System.properties["db.user"]
+}
+if(System.properties["db.pass"] != null) {
+    appConfig.db.pass = System.properties["db.pass"]
+}
+if(System.properties["db.port"] != null) {
+    appConfig.db.port = System.properties["db.port"]
+}
+if(System.properties["db.name"] != null) {
+    appConfig.db.name = System.properties["db.name"]
+}
+if(System.properties["db.host"] != null) {
+    appConfig.db.host = System.properties["db.host"]
+}
+if(System.properties["version"] != null) {
+    appConfig.version = System.properties["version"]
+    appConfig.server.version = System.properties["version"]
+}
+
+
+configurations {
+    driver
+}
+
+flyway {
+    url = "jdbc:postgresql://${appConfig.db.host}:${appConfig.db.port}/${appConfig.db.name}"
+    user = appConfig.db.user
+    password = appConfig.db.pass
+}
+
+task dbInstall{
+    onlyIf{
+        !System.properties['dbFiles'].isEmpty()
+    }
+    doLast{
+        URLClassLoader loader = GroovyObject.class.classLoader
+        configurations.driver.each {File fileDriver ->
+            loader.addURL(fileDriver.toURL())
+        }
+        def props = [user: appConfig.db.user, password: appConfig.db.pass, allowMultiQueries: 'true'] as Properties
+        def driver = 'org.postgresql.Driver'
+        def sql = Sql.newInstance("jdbc:postgresql://${appConfig.db.host}:${appConfig.db.port}/${appConfig.db.name}", props, driver)
+
+        def files = System.properties['dbFiles'].split(',')
+        files.each{
+            def sqlFile = new File(this.projectDir.absolutePath + "/src/main/resources/db.test/${it}.sql")
+            if(sqlFile.exists()){
+                sql.execute(sqlFile.text);
+                println "item ${it} exists and executed"
+            }
+
+        }
+        sql.close()
+        println "endInstall"
+    }
+
+}
+
+repositories {
+    mavenCentral()
+    maven { url "https://repository.jboss.org/nexus/content/repositories/releases" }
+}
+
+dependencies {
+    compile("org.springframework.boot:spring-boot-starter-data-jpa")
+    compile("org.springframework.boot:spring-boot-starter-web")
+    compile("org.springframework.boot:spring-boot-starter-security")
+    compile("org.springframework:spring-context-support")
+    compile("org.springframework.boot:spring-boot-starter-websocket:1.5.2.RELEASE")
+    compile("org.quartz-scheduler:quartz:2.2.3")
+    compile("com.google.code.gson:gson")
+    compile("commons-io:commons-io:2.4")
+    compile("org.projectlombok:lombok:1.16.16")
+    compile("org.postgresql:postgresql:9.4.1211") // compile("com.h2database:h2")
+    compile("javax.mail:mail:1.4.7")
+    // compile('com.github.ben-manes:gradle-flyway-plugin:0.7')
+    driver 'org.postgresql:postgresql:9.4-1206-jdbc42'
+    testCompile("junit:junit")
+    testCompile("org.springframework.boot:spring-boot-starter-test")
+    compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.11.0'
+    compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.11.0'
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '3.5'
+}

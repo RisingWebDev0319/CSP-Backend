@@ -1,0 +1,255 @@
+<html ng-app='restAPI'>
+<head>
+	<meta charset="utf-8">
+	<title>Test API</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" crossorigin="anonymous">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+</head>
+<body ng-controller="restAPI_Ctrl">
+	<div class="row">
+		<div class="col-md-4">
+			<div class="panel panel-primary">
+				<div class="panel-heading">GET: Therapists</div>
+		  		<div class="panel-body">
+		  			<form>
+		  				<div class="form-group">
+		    				<label>API KEY</label>
+		    				<input type="text" class="form-control" ng-model="api_key">
+		  				</div>  
+		  				<button type="submit" class="btn btn-default" ng-click="getTherapists()">Submit</button>
+					</form>
+					<label>Response:</label><br/>
+					<textarea class="form-control" rows="15">
+						{{ response_getTherapists | json }}
+					</textarea>
+		  		</div>  		
+			</div>	
+		</div>
+		<div class="col-md-4">
+			<div class="panel panel-primary">
+				<div class="panel-heading">GET: Services</div>
+		  		<div class="panel-body">
+		  			<form>
+		  				<div class="form-group">
+		    				<label>API KEY</label>
+		    				<input type="text" class="form-control" ng-model="api_key">
+		  				</div>  
+		  				<button type="submit" class="btn btn-default" ng-click="getServices()">Submit</button>
+					</form>
+					<label>Response:</label><br/>
+					<textarea class="form-control" rows="15">
+						{{ response_getServices | json }}
+					</textarea>
+		  		</div>  		
+			</div>	
+		</div>
+		<div class="col-md-4">
+			<div class="panel panel-primary">
+				<div class="panel-heading">GET: Events</div>
+		  		<div class="panel-body">
+		  			<form>
+		  				<div class="form-group">
+		    				<label>API KEY</label>
+		    				<input type="text" class="form-control" ng-model="api_key">
+		  				</div>  
+		  				<button type="submit" class="btn btn-default" ng-click="getEvents()">Submit</button>
+					</form>
+					<label>Response:</label><br/>
+					<textarea class="form-control" rows="15">
+						{{ response_getEvents | json }}
+					</textarea>
+		  		</div>  		
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-4">
+			<div class="panel panel-primary">
+				<div class="panel-heading">GET: Custom Protocols and Custom Protocols Packages</div>
+		  		<div class="panel-body">
+		  			<form>
+		  				<div class="form-group">
+		    				<label>API KEY</label>
+		    				<input type="text" class="form-control" ng-model="api_key">
+		  				</div>
+		  				<div class="form-group">
+		    				<label>Is Custom Protocol</label>
+		    				<select class="form-control" ng-model="protocolOption" ng-init="protocolOption" ng-options="protocolOption for protocolOption in selectOptions" required></select> 
+		  				</div>
+		  				<div class="form-group">
+		    				<label>Is Custom Protocol Package</label>
+		    				<select class="form-control" ng-model="packageOption" ng-init="packageOption" ng-options="packageOption for packageOption in selectOptions" required></select> 
+		  				</div>
+		  				<button type="submit" class="btn btn-default" ng-click="getProtocols()">Submit</button>
+					</form>
+					<label>Response:</label><br/>
+					<textarea class="form-control" rows="15">
+						{{ response_getProtocols | json }}
+					</textarea>
+		  		</div>  		
+			</div>	
+		</div>
+		<div class="col-md-4">
+			<div class="panel panel-primary">
+				<div class="panel-heading">GET: Clients</div>
+		  		<div class="panel-body">
+		  			<form>
+		  				<div class="form-group">
+		    				<label>API KEY</label>
+		    				<input type="text" class="form-control" ng-model="api_key">
+		  				</div>
+		  				<div class="form-group">
+		    				<label>page</label>
+		    				<input type="text" class="form-control" ng-model="page">
+		  				</div>
+		  				<div class="form-group">
+		    				<label>pageSize</label>
+		    				<input type="text" class="form-control" ng-model="pageSize">
+		  				</div>
+		  				<button type="submit" class="btn btn-default" ng-click="getClients()">Submit</button>
+					</form>
+					<label>Response:</label><br/>
+					<textarea class="form-control" rows="15">
+						{{ response_getClients | json }}
+					</textarea>
+		  		</div>
+			</div>
+		</div>
+		<div class="col-md-4">
+			<div class="panel panel-primary">
+				<div class="panel-heading">GET: Client Information</div>
+		  		<div class="panel-body">
+		  			<form>
+		  				<div class="form-group">
+		    				<label>API KEY</label>
+		    				<input type="text" class="form-control" ng-model="api_key">
+		  				</div>
+		  				<div class="form-group">
+		    				<label>id</label>
+		    				<input type="text" class="form-control" ng-model="client_id">
+		  				</div>		  				
+		  				<button type="submit" class="btn btn-default" ng-click="getClientInformation()">Submit</button>
+					</form>
+					<label>Response:</label><br/>
+					<textarea class="form-control" rows="15">
+						{{ response_getClientInformation | json }}
+					</textarea>
+		  		</div>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-4">
+			<div class="panel panel-danger">
+				<div class="panel-heading">POST: Create Estimate</div>
+		  		<div class="panel-body">
+		  			<form>
+		  				<div class="form-group">
+		    				<label>API KEY</label>
+		    				<input type="text" class="form-control" ng-model="api_key">
+		  				</div>
+		  				<div class="form-group">
+		    				<label>clientId</label>
+		    				<input type="text" class="form-control" ng-model="client_id_estimate">
+		  				</div>		  				
+		  				<button type="submit" class="btn btn-default" ng-click="createEstimate()">Submit</button>
+					</form>
+					<label>Response:</label><br/>
+					<textarea class="form-control" rows="15">
+						{{ response_createEstimate | json }}
+					</textarea>
+		  		</div>
+			</div>
+		</div>
+		<div class="col-md-4">
+		</div>
+	</div>
+	<script>
+		var ns_API_EndPoint = "https://forms.netsuite.com/app/site/hosting/scriptlet.nl?script=61&deploy=1&compid=879421&h=4342265a7228292c3614";
+		var app = angular.module('restAPI', []);
+        app.controller('restAPI_Ctrl', function($scope, $sce, $http) { 
+
+        	$scope.api_key = '5994802942ae9901';
+        	$scope.selectOptions = ['T', 'F'];
+        	$scope.protocolOption = 'T';
+        	$scope.packageOption = 'F';
+        	$scope.client_id = 5531;
+        	$scope.client_id_estimate = 1537;
+        	$scope.page = 0;
+        	$scope.pageSize = 100;
+
+        	$scope.response_getTherapists = '';
+        	$scope.response_getServices = '';
+        	$scope.response_getEvents = '';
+			$scope.response_getProtocols = '';
+			$scope.response_getClients = '';
+			$scope.response_getClientInformation = '';
+			$scope.response_createEstimate = '';
+
+        	$scope.trustAsResourceUrl = $sce.trustAsResourceUrl;
+
+        	// getTherapists
+        	$scope.getTherapists = function() {
+        		$http.jsonp($scope.trustAsResourceUrl(ns_API_EndPoint + "&method=getTherapists&API_KEY=" + $scope.api_key))
+	            .then(function(response) {
+	            	$scope.response_getTherapists = response.data;
+	            });
+        	};
+        	// getServices
+        	$scope.getServices = function() {
+        		$http.jsonp($scope.trustAsResourceUrl(ns_API_EndPoint + "&method=getServices&API_KEY=" + $scope.api_key))
+	            .then(function(response) {
+	            	$scope.response_getServices = response.data;
+	            });
+        	};
+        	// getEvents
+        	$scope.getEvents = function() {
+        		$http.jsonp($scope.trustAsResourceUrl(ns_API_EndPoint + "&method=getEvents&API_KEY=" + $scope.api_key))
+	            .then(function(response) {
+	            	$scope.response_getEvents = response.data;
+	            });
+        	};
+        	// getProtocols
+        	$scope.getProtocols = function() {
+        		$http.jsonp($scope.trustAsResourceUrl(ns_API_EndPoint + "&method=getProtocols&isProtocol=" + $scope.protocolOption + "&isPackage=" + $scope.packageOption + "&API_KEY=" + $scope.api_key))
+	            .then(function(response) {
+	            	$scope.response_getProtocols = response.data;
+	            });
+        	};
+        	// getClients
+        	$scope.getClients = function() {
+        		$http.jsonp($scope.trustAsResourceUrl(ns_API_EndPoint + "&method=getClients&page=" + $scope.page + "&pageSize=" + $scope.pageSize + "&API_KEY=" + $scope.api_key))
+	            .then(function(response) {
+	            	$scope.response_getClients = response.data;	            	
+	            });	            
+        	};
+        	// getProtocols
+        	$scope.getClientInformation = function() {
+        		$http.jsonp($scope.trustAsResourceUrl(ns_API_EndPoint + "&method=getClientInformation&id=" + $scope.client_id + "&API_KEY=" + $scope.api_key))
+	            .then(function(response) {
+	            	$scope.response_getClientInformation = response.data;
+	            });
+        	};
+        	// createEstimate
+        	$scope.createEstimate = function() {
+                var data = $.param({
+                    'method': 'createEstimate',
+                    'clientId': $scope.client_id_estimate
+                });
+                var config = {
+                    headers : {
+                        'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8;'
+                    }
+                }
+                $http.post(ns_API_EndPoint + "&API_KEY=" + $scope.api_key, data, config)
+                .then(function(response) {
+                    $scope.response_createEstimate = response.data;
+                }, function(err) {
+                    $scope.response_createEstimate = err;
+                });   
+        	};
+        });
+	</script>
+</body>
+</html>
